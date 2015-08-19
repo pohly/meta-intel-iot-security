@@ -1,0 +1,46 @@
+From e6fca348137cfee5e58868858f5876594f4c909c Mon Sep 17 00:00:00 2001
+From: Patrick Ohly <patrick.ohly@intel.com>
+Date: Thu, 13 Aug 2015 16:34:39 +0200
+Subject: [PATCH 1/4] add_dir_hash: fix DIR leak in case of failure
+
+When bailing out of the function due to EVP_DigestUpdate()
+failing, the DIR resources allocated with opendir() were
+not freed.
+
+Signed-off-by: Patrick Ohly <patrick.ohly@intel.com>
+---
+ src/libimaevm.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/libimaevm.c b/src/libimaevm.c
+index 2ce819f..7320b57 100644
+--- a/src/libimaevm.c
++++ b/src/libimaevm.c
+@@ -211,6 +211,7 @@ static int add_dir_hash(const char *file, EVP_MD_CTX *ctx)
+ 	DIR *dir;
+ 	unsigned long long ino, off;
+ 	unsigned int type;
++	int result = 0;
+ 
+ 	dir = opendir(file);
+ 	if (!dir) {
+@@ -230,13 +231,14 @@ static int add_dir_hash(const char *file, EVP_MD_CTX *ctx)
+ 		err |= EVP_DigestUpdate(ctx, &type, sizeof(type));
+ 		if (!err) {
+ 			log_err("EVP_DigestUpdate() failed\n");
+-			return 1;
++			result = 1;
++			break;
+ 		}
+ 	}
+ 
+ 	closedir(dir);
+ 
+-	return 0;
++	return result;
+ }
+ 
+ static int add_link_hash(const char *path, EVP_MD_CTX *ctx)
+-- 
+2.1.4
+

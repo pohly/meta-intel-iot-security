@@ -1,0 +1,43 @@
+From 457f09b143ccce56b9408d1db9d6972ef9ae199c Mon Sep 17 00:00:00 2001
+From: Patrick Ohly <patrick.ohly@intel.com>
+Date: Thu, 13 Aug 2015 17:14:47 +0200
+Subject: [PATCH 2/4] tpm_pcr_read: close file when returning early
+
+When return from inside the for() loop, the open file was not
+closed.
+
+Signed-off-by: Patrick Ohly <patrick.ohly@intel.com>
+---
+ src/evmctl.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/evmctl.c b/src/evmctl.c
+index 3dfd432..f718158 100644
+--- a/src/evmctl.c
++++ b/src/evmctl.c
+@@ -1171,6 +1171,7 @@ static int tpm_pcr_read(int idx, uint8_t *pcr, int len)
+ {
+ 	FILE *fp;
+ 	char *p, pcr_str[7], buf[70]; /* length of the TPM string */
++	int result = -1;
+ 
+ 	sprintf(pcr_str, "PCR-%d", idx);
+ 
+@@ -1186,11 +1187,12 @@ static int tpm_pcr_read(int idx, uint8_t *pcr, int len)
+ 			break;
+ 		if (!strncmp(p, pcr_str, 6)) {
+ 			hex2bin(pcr, p + 7, len);
+-			return 0;
++			result = 0;
++			break;
+ 		}
+ 	}
+ 	fclose(fp);
+-	return -1;
++	return result;
+ }
+ 
+ #define TCG_EVENT_NAME_LEN_MAX	255
+-- 
+2.1.4
+

@@ -1,0 +1,60 @@
+From 1fb27b401390de41c734f170f0016163085f4adb Mon Sep 17 00:00:00 2001
+From: Patrick Ohly <patrick.ohly@intel.com>
+Date: Thu, 13 Aug 2015 17:52:19 +0200
+Subject: [PATCH 3/4] ima_verify: ignore -n flag
+
+"evmutil ima_verify -n <some file>" disabled using xattrs without enabling
+using a signature file, resulting in the use of uninitialized memory in
+ima_verify_signature() and thus unpredictable results.
+
+Such a mode of operation makes no sense, so interpret -n as
+documented ("print result to stdout instead of setting xattr") and ignore it
+during ima_verify. Instead, switch between the two verification modes only
+via the global sigfile variable.
+
+Signed-off-by: Patrick Ohly <patrick.ohly@intel.com>
+---
+ src/evmctl.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
+
+diff --git a/src/evmctl.c b/src/evmctl.c
+index f718158..55009c0 100644
+--- a/src/evmctl.c
++++ b/src/evmctl.c
+@@ -755,19 +755,17 @@ static int verify_ima(const char *file)
+ 	unsigned char sig[1024];
+ 	int len;
+ 
+-	if (xattr) {
+-		len = lgetxattr(file, "security.ima", sig, sizeof(sig));
+-		if (len < 0) {
+-			log_err("getxattr failed: %s\n", file);
+-			return len;
+-		}
+-	}
+-
+ 	if (sigfile) {
+ 		void *tmp = file2bin(file, "sig", &len);
+ 
+ 		memcpy(sig, tmp, len);
+ 		free(tmp);
++	} else {
++		len = lgetxattr(file, "security.ima", sig, sizeof(sig));
++		if (len < 0) {
++			log_err("getxattr failed: %s\n", file);
++			return len;
++		}
+ 	}
+ 
+ 	return ima_verify_signature(file, sig, len);
+@@ -1572,7 +1570,6 @@ int main(int argc, char *argv[])
+ 			break;
+ 		case 'f':
+ 			sigfile = 1;
+-			xattr = 0;
+ 			break;
+ 		case 'u':
+ 			uuid_str = optarg;
+-- 
+2.1.4
+
