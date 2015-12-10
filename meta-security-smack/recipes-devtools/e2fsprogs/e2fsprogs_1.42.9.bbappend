@@ -1,3 +1,8 @@
+# Version should be higher than without the patches.
+# +1 as suffix ensures that it is also higher than
+# the +git${SRCRV} that was used before in meta-intel-iot-security.
+PKGV="${PV}+xattr"
+
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 DEPENDS += "linux-libc-headers attr"
