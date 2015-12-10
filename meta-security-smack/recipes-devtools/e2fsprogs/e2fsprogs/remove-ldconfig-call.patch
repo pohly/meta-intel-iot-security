@@ -1,3 +1,8 @@
+From e00fbd796d368cd87e86984e08de0346a8909891 Mon Sep 17 00:00:00 2001
+From: Martin Jansa <martin.jansa@gmail.com>
+Date: Wed, 25 Mar 2015 01:24:11 -0700
+Subject: [PATCH 2/4] remove ldconfig call from make install-libs
+
 When /etc/ld.so.cache is writeable by user running bitbake then it creates
 invalid cache (in my case libstdc++.so cannot be found after building
 zlib(-native) and I have to call touch */libstdc++.so && /sbin/ldconfig to fix
@@ -5,12 +10,14 @@ it.
 
 So remove ldconfig call from make install-libs
 
-Patch authored by Martin Jansa.
-
 Upstream-Status: Inappropriate [disable feature]
 
 Signed-off-by: Scott Garman <scott.a.garman@intel.com>
 Signed-off-by: Andrei Dinu <andrei.adrianx.dinu@intel.com>
+Signed-off-by: Patrick Ohly <patrick.ohly@intel.com>
+---
+ lib/Makefile.elf-lib | 3 ---
+ 1 file changed, 3 deletions(-)
 
 diff --git a/lib/Makefile.elf-lib b/lib/Makefile.elf-lib
 index 78479d3..4a4a5ac 100644
@@ -33,3 +40,6 @@ index 78479d3..4a4a5ac 100644
  
  clean::
  	$(RM) -rf elfshared
+-- 
+2.1.4
+

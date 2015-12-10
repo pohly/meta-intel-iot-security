@@ -1,0 +1,32 @@
+From e7a849a15e6155b2372ab65d84820b84b9ea2b76 Mon Sep 17 00:00:00 2001
+From: Robert Yang <liezhi.yang@windriver.com>
+Date: Wed, 1 Jan 2014 01:25:17 +0800
+Subject: [PATCH 3/4] less verbose execution at image creation time
+
+When executing a script don't echo every command, as we do this for entire
+filesystems at rootfs time.
+
+Upstream-Status: Inappropriate
+
+Signed-off-by: Ross Burton <ross.burton@intel.com>
+Signed-off-by: Patrick Ohly <patrick.ohly@intel.com>
+---
+ debugfs/debugfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/debugfs/debugfs.c b/debugfs/debugfs.c
+index 735117e..cfe48c3 100644
+--- a/debugfs/debugfs.c
++++ b/debugfs/debugfs.c
+@@ -2336,7 +2336,7 @@ static int source_file(const char *cmd_file, int ss_idx)
+ 		cp = strchr(buf, '\r');
+ 		if (cp)
+ 			*cp = 0;
+-		printf("debugfs: %s\n", buf);
++		/*printf("debugfs: %s\n", buf);*/
+ 		retval = ss_execute_line(ss_idx, buf);
+ 		if (retval) {
+ 			ss_perror(ss_idx, retval, buf);
+-- 
+2.1.4
+

@@ -1,20 +1,25 @@
 COREDIR = "${COREBASE}/meta/recipes-devtools/e2fsprogs"
 
-FILESEXTRAPATHS_append := ":${COREDIR}/e2fsprogs"
+# Must include our own directory first, otherwise files from COREDIR
+# override ours.
+FILESEXTRAPATHS_prepend = "${THISDIR}/e2fsprogs:${COREDIR}/e2fsprogs:"
 
 require ${COREDIR}/e2fsprogs.inc
+
+# acinclude.m4 is only needed because e2fsprogs.inc expects it.
+# Upstream 1.43-pre now also has a copy, so the special handling
+# could be removed.
 
 SRC_URI = "git://git.kernel.org/pub/scm/fs/ext2/e2fsprogs.git \
            file://acinclude.m4 \
            file://mkdir.patch \
            file://remove-ldconfig-call.patch \
            file://quiet-debugfs.patch \
-           file://populate-fs-xattr.patch \
            file://cross-compile.patch \
 "
 
-SRCREV = "bb9cca2ca91b46e820f77dda38e01fb2860dc5d2"
-PV = "1.42.9+git${SRCPV}"
+SRCREV = "0f26747167cc9d82df849b0aad387bf824f04544"
+PV = "1.43~git${SRCPV}"
 
 S = "${WORKDIR}/git"
 

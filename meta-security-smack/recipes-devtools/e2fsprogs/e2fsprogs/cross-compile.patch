@@ -1,13 +1,27 @@
-diff --git a/configure.in b/configure.in
-index 448a292..31ca001 100644
---- a/configure.in
-+++ b/configure.in
-@@ -1382,7 +1382,7 @@ if test $cross_compiling = no; then
+From a8b0769972599caa4fb420f274f07947fc09bdc1 Mon Sep 17 00:00:00 2001
+From: Ross Burton <ross.burton@intel.com>
+Date: Wed, 25 Mar 2015 01:24:11 -0700
+Subject: [PATCH 4/4] enable cross-compilation
+
+Signed-off-by: Patrick Ohly <patrick.ohly@intel.com>
+---
+ configure.ac | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/configure.ac b/configure.ac
+index 8a0e3f7..0371f03 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1381,6 +1381,9 @@ dnl
+ if test $cross_compiling = no; then
     BUILD_CFLAGS="$CFLAGS $CPPFLAGS $INCLUDES -DHAVE_CONFIG_H"
     BUILD_LDFLAGS="$LDFLAGS"
- else
--   BUILD_CFLAGS=
++else
 +   BUILD_CFLAGS='-I. -I$(top_builddir)/lib -I$(top_srcdir)/lib -DHAVE_CONFIG_H'
-    BUILD_LDFLAGS=
++   BUILD_LDFLAGS=
  fi
  AC_SUBST(BUILD_CFLAGS)
+ AC_SUBST(BUILD_LDFLAGS)
+-- 
+2.1.4
+
