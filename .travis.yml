@@ -48,6 +48,7 @@ script:
   - echo 'VIRTUAL-RUNTIME_initscripts = ""' >>conf/local.conf
   - echo 'CORE_IMAGE_EXTRA_INSTALL_append_pn-core-image-minimal = " smack-userspace security-manager security-manager-policy cynara app-runas"' >>conf/local.conf
   - echo 'INHERIT_append_pn-core-image-minimal = " ima-evm-rootfs"' >>conf/local.conf
+  - echo 'IMA_EVM_KEY_DIR = "${IMA_EVM_BASE}/data/debug-keys"' >>conf/local.conf
   # For testing...
   - echo 'EXTRA_IMAGE_FEATURES = "debug-tweaks ssh-server-dropbear"' >>conf/local.conf
   - echo 'CORE_IMAGE_EXTRA_INSTALL_append_pn-core-image-minimal = " python"' >>conf/local.conf
