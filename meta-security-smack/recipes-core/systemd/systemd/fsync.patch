@@ -1,0 +1,48 @@
+From b563f27f190ba105ed56fc626c12f510fe67cd60 Mon Sep 17 00:00:00 2001
+From: Patrick Ohly <patrick.ohly@intel.com>
+Date: Mon, 15 Feb 2016 15:10:48 +0100
+Subject: [PATCH] machine-id-setup.c, random-seed.c: fsync new file content
+
+Both /etc/machine-id and /var/lib/systemd/random-seed are critical
+files where systemd should do its best to ensure that they get written
+to disk properly. Explicitly calling fsync() helps with that.
+
+In practise, this really makes a difference for the problem
+described here:
+https://sourceforge.net/p/linux-ima/mailman/message/34850685/
+---
+ src/core/machine-id-setup.c   | 3 +++
+ src/random-seed/random-seed.c | 3 +++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/src/core/machine-id-setup.c b/src/core/machine-id-setup.c
+index 145ba2a..1b14317 100644
+--- a/src/core/machine-id-setup.c
++++ b/src/core/machine-id-setup.c
+@@ -356,6 +356,9 @@ int machine_id_commit(const char *root) {
+         if (r < 0)
+                 return log_error_errno(r, "Cannot write %s: %m", etc_machine_id);
+ 
++        r = fsync(fd);
++        if (!r)
++                log_error_errno(errno, "Cannot fsync %s: %m", etc_machine_id);
+         fd = safe_close(fd);
+ 
+         /* Return to initial namespace and proceed a lazy tmpfs unmount */
+diff --git a/src/random-seed/random-seed.c b/src/random-seed/random-seed.c
+index d857ade..66be07f 100644
+--- a/src/random-seed/random-seed.c
++++ b/src/random-seed/random-seed.c
+@@ -161,6 +161,9 @@ int main(int argc, char *argv[]) {
+                 r = loop_write(seed_fd, buf, (size_t) k, false);
+                 if (r < 0)
+                         log_error_errno(r, "Failed to write new random seed file: %m");
++                r = fsync(seed_fd);
++                if (!r)
++                        log_error_errno(errno, "Failed to fsync new random seed file: %m");
+         }
+ 
+ finish:
+-- 
+2.1.4
+
