@@ -5,13 +5,11 @@ do_install_append_smack () {
     install -d ${D}/${sysconfdir}/smack/accesses.d
     cat >${D}/${sysconfdir}/smack/accesses.d/default-access-domains <<EOF
 System _ -----l
-System System::Log rwxa--
 System System::Run rwxat-
 System System::Shared rwxat-
 System ^ rwxa--
 _ System::Run rwxat-
 _ System -wx---
-^ System::Log rwxa--
 ^ System::Run rwxat-
 ^ System rwxa--
 EOF
@@ -66,7 +64,6 @@ pkg_postinst_${PN}_smack() {
     mkdir -p $D/tmp
     chsmack -a '*' $D/tmp
 
-    # <filesystem path="/var/log" label="System::Log" type="transmutable" />
     # <filesystem path="/var/tmp" label="*" />
     # These are in a file system mounted by systemd. We patch the systemd service
     # to set these attributes.

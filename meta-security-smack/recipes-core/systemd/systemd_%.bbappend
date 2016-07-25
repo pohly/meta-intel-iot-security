@@ -57,7 +57,7 @@ RDEPENDS_${PN}_append_smack = " smack-userspace"
 do_install_append_smack() {
     install_file ${D}${systemd_unitdir}/system/systemd-tmpfiles-setup.service.d/smack.conf <<EOF
 [Service]
-ExecStartPost=/bin/sh -c '([ ! -d /var/tmp ] || chsmack -L -a \"*\" /var/tmp) && ([ ! -d /var/log ] || chsmack -L -a System::Log /var/log && chsmack -L -t /var/log)'
+ExecStartPost=/bin/sh -c '([ ! -d /var/tmp ] || chsmack -L -a \"*\" /var/tmp)'
 EOF
 
     # Mount /tmp publicly accessable. Based on patch by Michael Demeter <michael.demeter@intel.com>.

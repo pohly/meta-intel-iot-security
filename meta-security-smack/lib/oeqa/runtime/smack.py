@@ -568,7 +568,6 @@ class SmackFileLabels(SmackBasicTest):
 /etc/terminfo access="System::Shared" transmute="TRUE"
 /etc/skel/ access="System::Shared" transmute="TRUE"
 /etc/skel/.profile access="System::Shared"
-/var/log/ access="System::Log" transmute="TRUE"
 /var/tmp/ access="*"
 '''
         files = ' '.join([x.split()[0] for x in expected.split('\n') if x])
